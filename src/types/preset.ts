@@ -4,14 +4,7 @@ export type RateDirection = 'rising' | 'falling';
 export type RateSpeed = 'fast' | 'moderate' | 'slow';
 export type MappingTarget = 'intensity' | 'direction' | 'rhythm' | 'pattern_shift';
 
-export type HapticPattern =
-  | 'wave_left_right'
-  | 'wave_right_left'
-  | 'inside_out'
-  | 'outside_in'
-  | 'front_to_back'
-  | 'back_to_front'
-  | 'pulse_all';
+export type HapticPattern = 'rising' | 'falling' | 'pulse_all';
 
 export type Duration = 'quick_pulse' | 'short' | 'medium' | 'long' | 'sustained';
 
@@ -47,20 +40,16 @@ export const EMPTY_RULE: RuleConfig = {
   condition_type: 'threshold',
   threshold_direction: 'above',
   threshold_value: 0,
-  pattern: 'wave_left_right',
+  pattern: 'pulse_all',
   intensity: 5,
   duration: 'medium',
   rhythm: 'steady',
 };
 
 export const PATTERN_LABELS: Record<HapticPattern, string> = {
-  wave_left_right: 'Wave left-to-right',
-  wave_right_left: 'Wave right-to-left',
-  inside_out: 'Inside-out',
-  outside_in: 'Outside-in',
-  front_to_back: 'Front-to-back',
-  back_to_front: 'Back-to-front',
-  pulse_all: 'Pulse all together',
+  rising: 'Rising — wave when stock goes up',
+  falling: 'Falling — wave when stock goes down',
+  pulse_all: 'All together — simple buzz',
 };
 
 export const DURATION_LABELS: Record<Duration, string> = {

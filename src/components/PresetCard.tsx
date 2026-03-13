@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ChevronDown, ChevronUp, Eye, Lock, Globe, Pencil, Trash2, Loader2 } from 'lucide-react';
 import type { PresetConfig } from '@/types/preset';
-import { PATTERN_LABELS, RHYTHM_LABELS } from '@/types/preset';
+import { PATTERN_LABELS } from '@/types/preset';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,12 +38,8 @@ interface Props {
 
 function getPatternEmoji(pattern?: string) {
   const map: Record<string, string> = {
-    wave_left_right: '🌊',
-    wave_right_left: '🌊',
-    inside_out: '💫',
-    outside_in: '🎯',
-    front_to_back: '➡️',
-    back_to_front: '⬅️',
+    rising: '📈',
+    falling: '📉',
     pulse_all: '💓',
   };
   return map[pattern || ''] || '⚡';
@@ -143,24 +139,12 @@ export function PresetCard({ preset, isOwner, onDelete, onTogglePublic, onEdit }
 
         {expanded && (
           <div className="mt-3 rounded-lg bg-muted p-3 text-xs space-y-2 animate-in slide-in-from-top-2">
-            {cfg.rule_front && cfg.rule_front.data_source && (
+            {(cfg.rule_front || cfg.rule_back) && (cfg.rule_front?.data_source || cfg.rule_back?.data_source) && (
               <div>
-                <p className="font-semibold mb-1">Front Rule:</p>
-                <p>Ticker: {cfg.rule_front.data_source}</p>
-                <p>Condition: {cfg.rule_front.condition_type}</p>
-                <p>Pattern: {PATTERN_LABELS[cfg.rule_front.pattern]}</p>
-                <p>Intensity: {cfg.rule_front.intensity}/10</p>
-                <p>Rhythm: {RHYTHM_LABELS[cfg.rule_front.rhythm]}</p>
-              </div>
-            )}
-            {cfg.rule_back && cfg.rule_back.data_source && (
-              <div>
-                <p className="font-semibold mb-1">Back Rule:</p>
-                <p>Ticker: {cfg.rule_back.data_source}</p>
-                <p>Condition: {cfg.rule_back.condition_type}</p>
-                <p>Pattern: {PATTERN_LABELS[cfg.rule_back.pattern]}</p>
-                <p>Intensity: {cfg.rule_back.intensity}/10</p>
-                <p>Rhythm: {RHYTHM_LABELS[cfg.rule_back.rhythm]}</p>
+                <p className="font-semibold mb-1">Rule:</p>
+                <p>Ticker: {cfg.rule_front?.data_source || cfg.rule_back?.data_source}</p>
+                <p>Pattern: {PATTERN_LABELS[(cfg.rule_front || cfg.rule_back)?.pattern as keyof typeof PATTERN_LABELS] || PATTERN_LABELS.pulse_all}</p>
+                <p>Intensity: {(cfg.rule_front || cfg.rule_back)?.intensity ?? 5}/10</p>
               </div>
             )}
             <Button

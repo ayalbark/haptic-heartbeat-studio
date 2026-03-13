@@ -1,87 +1,68 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { RuleConfig } from '@/types/preset';
 
 interface Props {
-  frontRule: RuleConfig | null;
-  backRule: RuleConfig | null;
-  activeSection: 'front' | 'back' | null;
+  rule: RuleConfig | null;
+  direction?: 'up' | 'down' | null;
 }
 
-export function BodyVisualization({ frontRule, backRule, activeSection }: Props) {
-  const [view, setView] = useState<'front' | 'back'>('front');
+/** 9 motors in a 3x3 grid on the torso */
+const MOTOR_POSITIONS = [
+  { cx: 35, cy: 42 },
+  { cx: 50, cy: 42 },
+  { cx: 65, cy: 42 },
+  { cx: 35, cy: 55 },
+  { cx: 50, cy: 55 },
+  { cx: 65, cy: 55 },
+  { cx: 35, cy: 68 },
+  { cx: 50, cy: 68 },
+  { cx: 65, cy: 68 },
+];
 
-  const rule = view === 'front' ? frontRule : backRule;
-  const isHighlighted = activeSection === view;
+export function BodyVisualization({ rule, direction }: Props) {
   const hasData = rule && rule.data_source.trim() !== '';
+  const showGlow = hasData && direction;
 
   return (
     <div className="flex flex-col items-center gap-3">
-      <div className="flex gap-1">
-        <Button
-          size="sm"
-          variant={view === 'front' ? 'default' : 'outline'}
-          onClick={() => setView('front')}
-          className="text-xs"
-        >
-          Front View
-        </Button>
-        <Button
-          size="sm"
-          variant={view === 'back' ? 'default' : 'outline'}
-          onClick={() => setView('back')}
-          className="text-xs"
-        >
-          Back View
-        </Button>
-      </div>
+      <svg
+        viewBox="0 0 100 110"
+        className="w-[22rem] h-[28rem]"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {/* Simple outline: rounded head, oval torso, stick arms & legs */}
+        <ellipse cx="50" cy="12" rx="9" ry="10" className="stroke-white/40" />
+        <ellipse cx="50" cy="55" rx="20" ry="25" className="stroke-white/40" />
+        <path d="M 30 42 Q 15 48 12 58" className="stroke-white/40" />
+        <path d="M 70 42 Q 85 48 88 58" className="stroke-white/40" />
+        <path d="M 38 78 Q 32 95 30 108" className="stroke-white/40" />
+        <path d="M 62 78 Q 68 95 70 108" className="stroke-white/40" />
 
-      <div className="relative w-40 h-64">
-        {/* Silhouette */}
-        <svg viewBox="0 0 100 160" className="w-full h-full">
-          {/* Head */}
-          <circle cx="50" cy="18" r="12" className="fill-muted stroke-border" strokeWidth="1.5" />
-          {/* Body */}
-          <ellipse cx="50" cy="65" rx="25" ry="35" className="fill-muted stroke-border" strokeWidth="1.5" />
-          {/* Left arm */}
-          <line x1="25" y1="45" x2="10" y2="85" className="stroke-border" strokeWidth="4" strokeLinecap="round" />
-          {/* Right arm */}
-          <line x1="75" y1="45" x2="90" y2="85" className="stroke-border" strokeWidth="4" strokeLinecap="round" />
-          {/* Left leg */}
-          <line x1="38" y1="95" x2="32" y2="145" className="stroke-border" strokeWidth="5" strokeLinecap="round" />
-          {/* Right leg */}
-          <line x1="62" y1="95" x2="68" y2="145" className="stroke-border" strokeWidth="5" strokeLinecap="round" />
-
-          {/* Motor positions */}
-          {[
-            { cx: 35, cy: 55 }, // Left
-            { cx: 50, cy: 50 }, // Center
-            { cx: 65, cy: 55 }, // Right
-          ].map((pos, i) => (
-            <circle
-              key={i}
-              cx={pos.cx}
-              cy={pos.cy}
-              r="6"
-              className={cn(
-                'transition-all duration-300',
-                isHighlighted && hasData
-                  ? 'fill-primary stroke-primary/50 animate-pulse'
-                  : hasData
-                    ? 'fill-primary/40 stroke-primary/30'
-                    : 'fill-muted-foreground/20 stroke-muted-foreground/30'
-              )}
-              strokeWidth="2"
-            />
-          ))}
-        </svg>
-
-        {/* Label */}
-        <div className="absolute bottom-0 inset-x-0 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider">
-          {view} view
-        </div>
-      </div>
+        {/* 9 motor dots - purple with subtle glow when active */}
+        {MOTOR_POSITIONS.map((pos, i) => (
+          <circle
+            key={i}
+            cx={pos.cx}
+            cy={pos.cy}
+            r="5"
+            className={cn(
+              'transition-all duration-300 drop-shadow-sm',
+              showGlow && direction === 'up' && 'fill-emerald-400 stroke-emerald-300/50 animate-motor-pulse',
+              showGlow && direction === 'down' && 'fill-red-400 stroke-red-300/50 animate-motor-pulse',
+              hasData && !showGlow && 'fill-violet-500 stroke-violet-400/60',
+              !hasData && 'fill-white/25 stroke-white/40'
+            )}
+            strokeWidth="2"
+          />
+        ))}
+      </svg>
+      <span className="text-xs font-medium uppercase tracking-wider text-white/50">
+        9 motors
+      </span>
     </div>
   );
 }

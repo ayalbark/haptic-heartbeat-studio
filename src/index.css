@@ -94,3 +94,36 @@
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
 }
+
+/* Stock wave background animations */
+@keyframes wave-float-slow {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  50% { transform: translateY(-8px) translateX(4px); }
+}
+@keyframes wave-float-medium {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  50% { transform: translateY(-5px) translateX(-3px); }
+}
+@keyframes wave-float-fast {
+  0%, 100% { transform: translateY(0); }
+  33% { transform: translateY(-4px); }
+  66% { transform: translateY(-2px); }
+}
+
+.animate-wave-slow {
+  animation: wave-float-slow 8s ease-in-out infinite;
+}
+.animate-wave-medium {
+  animation: wave-float-medium 6s ease-in-out infinite;
+}
+.animate-wave-fast {
+  animation: wave-float-fast 4s ease-in-out infinite;
+}
+
+@keyframes motor-pulse {
+  0%, 100% { opacity: 1; filter: drop-shadow(0 0 4px currentColor); }
+  50% { opacity: 0.85; filter: drop-shadow(0 0 8px currentColor); }
+}
+.animate-motor-pulse {
+  animation: motor-pulse 1.5s ease-in-out infinite;
+}
